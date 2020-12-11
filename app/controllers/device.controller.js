@@ -143,21 +143,33 @@ exports.updateDevice = function(req, res) {
   });
 };
 
-exports.updatePepCount = function(req, res) {
-  //Buat Raspi
-  var device_id = req.body.device_id;
-  var peoplecount = req.body.peoplecount;
- 
-  con.query('UPDATE Device SET peoplecount = ? WHERE device_id = ?',
-  [ peoplecount,device_id ], 
-  function (error, rows, fields){
-      if(error){
-          console.log(error)
-      } else{
-          response.ok("Berhasil merubah People Count!", res)
-      }
-  });
-};
+exports.updatePepCount = function(io) {
+    return function(req, res) {
+        //Buat Raspi
+        var device_id = req.body.device_id;
+        var peoplecount = req.body.peoplecount;
+       
+        con.query('UPDATE Device SET peoplecount = ? WHERE device_id = ?',
+        [ peoplecount,device_id ], 
+        function (error, rows, fields){
+            if(error){
+                console.log(error)
+            }
+        });
+
+        // get the rooms where people > room capacity
+        con.query('SELECT * from room r \
+        join device d on d.device_id = r.room_id \
+        WHERE d.peoplecount > r.maxcapacity',
+        function(error, result, fields){
+            if (result.length > 0){
+                console.log(result);
+                io.sockets.emit('pepCountWarning', { message: "People limit exceeded!"});
+                response.ok("People limit exceeded!", res);
+            }
+        })
+      };
+}
 
 exports.deleteRoom = function(req, res) {
   

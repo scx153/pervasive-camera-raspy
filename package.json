@@ -23,6 +23,7 @@
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.2.5",
     "sequelize": "^5.22.3",
-    "sequelize-auto": "^0.7.2"
+    "sequelize-auto": "^0.7.2",
+    "socket.io": "^3.0.4"
   }
 }

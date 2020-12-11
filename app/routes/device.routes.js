@@ -1,5 +1,5 @@
 const APIs = require("../controllers/device.controller.js");
-module.exports = function(app){
+module.exports = function(app, io){
 
     //  GET
     app.route('/api/room/')
@@ -32,7 +32,7 @@ module.exports = function(app){
         .put(APIs.updateDevice);
     
     app.route('/api/devices/PepCount/')
-        .put(APIs.updatePepCount);
+        .put(APIs.updatePepCount(io));
     
     //DELETE
     app.route(`/api/room/:room_id`)

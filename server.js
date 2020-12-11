@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 var corsOptions = {
   origin: "http://localhost:3000"
@@ -27,6 +29,13 @@ db.sequelize.sync();
 //   initial();
 // });
 
+io.on('connection', function(socket) {
+  console.log('a client connected!');
+  socket.on('disconnect', function () {
+     console.log('client disconnected!');
+  });
+});
+
 // simple route
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to bezkoder application." });
@@ -35,11 +44,11 @@ app.get("/", (req, res) => {
 // routes
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
-require('./app/routes/device.routes')(app);
+require('./app/routes/device.routes')(app, io);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
 
